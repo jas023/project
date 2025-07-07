@@ -1,0 +1,13 @@
+.vscode/
+node_modules/
+.gradle/
+.cache/
+.idea/
+Desktop/
+Downloads/
+
+*.log
+*.class
+*.jar
+.bash_history
+*.iml

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📚 Book Finder and Quote Generator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .navbar-custom {
+      background-color: #915144;
+    }
+
+    .book-hero, .quote-hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 15px;
+    }
+
+    .book-hero {
+      background: url('image2.jpg') no-repeat center center/cover;
+    }
+
+    .quote-hero {
+      background: url('image3.jpg') no-repeat center center/cover;
+    }
+
+    .book-search-box, .quote-box {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 40px;
+      max-width: 900px;
+      width: 100%;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .book-card {
+      min-height: 350px;
+    }
+
+    .btn-search-custom {
+      background-color: #5c446b;
+      color: #fff;
+      border: none;
+    }
+
+    .btn-search-custom:hover {
+      background-color: #4a148c;
+    }
+
+    .btn-quote {
+      background-color: #00897b;
+      color: white;
+      border: none;
+    }
+
+    .btn-quote:hover {
+      background-color: #00695c;
+    }
+
+    footer {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+    <div class="container">
+      <a class="navbar-brand me-6" href="#">📚 Search & Get</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active me-5" href="#books" data-bs-toggle="tab">📘Book Finder</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link me-3" href="#quotes" data-bs-toggle="tab">💬Quote Generator</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid mt-4">
+    <div class="tab-content mt-4" id="myTabContent">
+
+  <!-- Tab Content -->
+  <div class="tab-content" id="myTabContent">
+    <!-- Book Tab -->
+    <div class="tab-pane fade show active" id="books" role="tabpanel" aria-labelledby="books-tab">
+      <div class="book-hero">
+        <div class="book-search-box text-dark">
+          <h3 class="text-center mb-4">Search for a Book Here!</h3>
+          <div class="mb-3">
+            <input type="text" id="bookInput" class="form-control form-control-lg" placeholder="Enter book title or author" />
+          </div>
+          <div class="text-center">
+            <button class="btn btn-search-custom btn-lg mb-4" onclick="searchBooks()">Search</button>
+          </div>
+          <div id="bookResults" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 "></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quote Tab -->
+    <div class="tab-pane fade" id="quotes" role="tabpanel" aria-labelledby="quotes-tab">
+      <div class="quote-hero">
+        <div class="quote-box">
+          <h3 class="mb-4 text-center">Get the Quote!</h3>
+          <div class="text-center">
+          <button class="btn btn-quote mb-4 align-center" onclick="generateQuote()">Inspire Me</button>
+        </div>
+          <p id="quoteText" class="fs-4 fw-semibold text-center">Click the button to get a quote...</p>
+          <p id="quoteAuthor" class="fst-italic text-muted"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-3">
+    Hope It Helps You! 😊 
+    <!-- <a href="#" class="text-white text-decoration-underline">GitHub</a> |
+    <a href="#" class="text-white text-decoration-underline">LinkedIn</a> -->
+  </footer>
+
+  <!-- JS -->
+  <script>
+    function searchBooks() {
+      const query = document.getElementById("bookInput").value;
+      const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`;
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          const results = document.getElementById("bookResults");
+          results.innerHTML = "";
+          if (data.items) {
+            data.items.forEach(book => {
+              const info = book.volumeInfo;
+              const card = document.createElement("div");
+              card.className = "col";
+              card.innerHTML = `
+                <div class="card h-100 book-card">
+                  <img src="${info.imageLinks ? info.imageLinks.thumbnail : ''}" class="card-img-top" alt="Book Image">
+                  <div class="card-body">
+                    <h5 class="card-title">${info.title}</h5>
+                    <p class="card-text"><strong>Author:</strong> ${info.authors ? info.authors.join(", ") : 'Unknown'}</p>
+                    <p class="card-text">${info.description ? info.description.substring(0, 100) + '...' : 'No description available.'}</p>
+                    <a href="${info.previewLink}" target="_blank" class="btn btn-outline-primary">Preview</a>
+                  </div>
+                </div>`;
+              results.appendChild(card);
+            });
+          } else {
+            results.innerHTML = `<p class='text-danger'>No results found. Try a different keyword.</p>`;
+
+          }
+        });
+    }
+
+    async function generateQuote() {
+      try {
+        const response = await fetch("https://api.quotable.io/random");
+        const data = await response.json();
+        document.getElementById("quoteText").innerText = `${data.content}`;
+document.getElementById("quoteAuthor").innerText = `– ${data.author}`;
+
+      } catch (error) {
+        document.getElementById("quoteText").innerText = "Oops! Could not fetch a quote.";
+        document.getElementById("quoteAuthor").innerText = "";
+      }
+    }
+
+    // Automatically load a quote on page load
+    window.onload = generateQuote;
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Enable tab switching behavior
+    document.addEventListener("DOMContentLoaded", function () {
+      const triggerTabList = document.querySelectorAll('[data-bs-toggle="tab"]');
+      triggerTabList.forEach(function (triggerEl) {
+        const tabTrigger = new bootstrap.Tab(triggerEl);
+        triggerEl.addEventListener("click", function (event) {
+          event.preventDefault();
+          tabTrigger.show();
+        });
+      });
+    });
+  </script>
+  
+</body>
+</html>
