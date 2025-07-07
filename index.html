@@ -38,10 +38,28 @@
     .book-search-box, .quote-box {
       background: rgba(255, 255, 255, 0.95);
       border-radius: 15px;
-      padding: 40px;
-      max-width: 900px;
+      padding: 30px 20px;
       width: 100%;
+      max-width: 900px;
       box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (max-width: 576px) {
+      .book-search-box, .quote-box {
+        padding: 20px 15px;
+      }
+
+      h3 {
+        font-size: 1.4rem;
+      }
+
+      .form-control {
+        font-size: 1rem;
+      }
+
+      .btn {
+        font-size: 1rem;
+      }
     }
 
     .book-card {
@@ -94,11 +112,8 @@
     </div>
   </nav>
 
-  <div class="container-fluid mt-4">
-    <div class="tab-content mt-4" id="myTabContent">
-
   <!-- Tab Content -->
-  <div class="tab-content" id="myTabContent">
+  <div class="tab-content mt-4" id="myTabContent">
     <!-- Book Tab -->
     <div class="tab-pane fade show active" id="books" role="tabpanel" aria-labelledby="books-tab">
       <div class="book-hero">
@@ -110,7 +125,7 @@
           <div class="text-center">
             <button class="btn btn-search-custom btn-lg mb-4" onclick="searchBooks()">Search</button>
           </div>
-          <div id="bookResults" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 "></div>
+          <div id="bookResults" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"></div>
         </div>
       </div>
     </div>
@@ -121,22 +136,18 @@
         <div class="quote-box">
           <h3 class="mb-4 text-center">Get the Quote!</h3>
           <div class="text-center">
-          <button class="btn btn-quote mb-4 align-center" onclick="generateQuote()">Inspire Me</button>
-        </div>
+            <button class="btn btn-quote mb-4 align-center" onclick="generateQuote()">Inspire Me</button>
+          </div>
           <p id="quoteText" class="fs-4 fw-semibold text-center">Click the button to get a quote...</p>
-          <p id="quoteAuthor" class="fst-italic text-muted"></p>
+          <p id="quoteAuthor" class="fst-italic text-muted text-center"></p>
         </div>
       </div>
     </div>
   </div>
 
-  
-
   <!-- Footer -->
   <footer class="bg-dark text-white text-center py-3">
-    Hope It Helps You! 😊 
-    <!-- <a href="#" class="text-white text-decoration-underline">GitHub</a> |
-    <a href="#" class="text-white text-decoration-underline">LinkedIn</a> -->
+    Hope It Helps You! 😊
   </footer>
 
   <!-- JS -->
@@ -169,7 +180,6 @@
             });
           } else {
             results.innerHTML = `<p class='text-danger'>No results found. Try a different keyword.</p>`;
-
           }
         });
     }
@@ -179,21 +189,14 @@
         const response = await fetch("https://api.quotable.io/random");
         const data = await response.json();
         document.getElementById("quoteText").innerText = `${data.content}`;
-document.getElementById("quoteAuthor").innerText = `– ${data.author}`;
-
+        document.getElementById("quoteAuthor").innerText = `– ${data.author}`;
       } catch (error) {
         document.getElementById("quoteText").innerText = "Oops! Could not fetch a quote.";
         document.getElementById("quoteAuthor").innerText = "";
       }
     }
 
-    // Automatically load a quote on page load
-    window.onload = generateQuote;
-  </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // Enable tab switching behavior
+    // Enable tab switching and auto load quote on Quote tab click
     document.addEventListener("DOMContentLoaded", function () {
       const triggerTabList = document.querySelectorAll('[data-bs-toggle="tab"]');
       triggerTabList.forEach(function (triggerEl) {
@@ -201,10 +204,16 @@ document.getElementById("quoteAuthor").innerText = `– ${data.author}`;
         triggerEl.addEventListener("click", function (event) {
           event.preventDefault();
           tabTrigger.show();
+
+          // Load quote only when quote tab is clicked
+          if (triggerEl.getAttribute("href") === "#quotes") {
+            generateQuote();
+          }
         });
       });
     });
   </script>
-  
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
